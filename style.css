@@ -3,3 +3,46 @@
    margin: 0;
    padding: 0;
 }
+body{
+   width: 100vw;
+   height: 100vh;
+   background: linear-gradient(black, lightgrey);
+}
+
+/* SEARCH BAR */
+#searchBar{
+   height: 80px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   border-bottom: 1px solid white;
+}
+#logo{
+   margin-left: 50px;
+}
+#logo h2{
+   font-size: 40px;
+   color: red;
+}
+#searchInstruments{
+   margin-right: 50px;
+}
+#searchInstruments *{
+   height: 30px;
+   padding: 5px 10px;
+}
+#searchInstruments input{
+   width: 300px;
+}
+#searchInstruments #searchButton{
+   border-radius: 5px;
+   border-style: none;
+   outline: none;
+   cursor: pointer;
+   transition: all 1s ease;
+}
+#searchInstruments #searchButton:hover{
+   background-color: black;
+   color: white;
+   border: 1px solid white;
+}
