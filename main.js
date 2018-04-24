@@ -1,3 +1,11 @@
+var arrayCountries = [
+   {'it': '<img src="flags/italy.jpg>'},
+   {'en': '<img src="flags/england.jpg">'},
+   {'fr': '<img src="flags/france.jpg">'},
+   {'de': '<img src="flags/germany.jpg">'},
+   {'es': '<img src="flags/spain.jpg">'},
+   {'jp': '<img src="flag/japan.jpg"'}
+];
 $(document).ready(function(){
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
@@ -27,7 +35,7 @@ function searchForMovies(searchItem){
       data: {
          api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb',
          query: searchItem,
-         language: 'it-IT'
+         language: 'it'
       },
       success: function(data){
          //take the results of the ajax call
@@ -39,12 +47,18 @@ function searchForMovies(searchItem){
                var vote = (response[i].vote_average * 5 / 10).toFixed(0);
                //make stars appears instead of vote
                var fullStars = assignStars(vote);
+               //take the language of the movie
+               var language = response[i].original_language;
                console.log(vote);
+               console.log(language);
+               //assign flag to a variable
+               var flag = assignFlag(language, arrayCountries);
+               console.log(flag);
                listInfo.append('<div class="movie-infos">' +
-               '<div class="list-item">Titolo: <span>' + response[i].title + '</span></div>' +
-               '<div class="list-item">Titolo originale: <span>' + response[i].original_title + '</span></div>' +
-               '<div class="list-item">Lingua: <span>' + response[i].original_language + '</span></div>' +
-               '<div class="list-item">Voto: <span>' + fullStars + '</span></div>' +
+               '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
+               '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
+               '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
+               '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
                '</div>');
             }
          }
@@ -59,9 +73,9 @@ function searchForMovies(searchItem){
 }
 //convert movie vote into stars
 function assignStars(rating){
-   console.log('voto' + rating);
    var stars = '';
    for (var i = 1; i <= 5; i++) {
+      //if the the stars is under the rating value it will be colored;
       if(i <= rating){
          stars += '<span class="stars colored"><i class="fas fa-star"></i></span>';
 
@@ -71,4 +85,26 @@ function assignStars(rating){
       }
    }
    return stars;
+}
+//search if a flag for a specific language exist
+function assignFlag(spokenLanguage , arrCountries){
+   var isFound = false;
+   var count = 0;
+   var icon = '';
+   do{
+      if(arrCountries[count].hasOwnProperty(spokenLanguage)){
+         icon = arrCountries[count][spokenLanguage];
+         isFound = true;
+      }
+      else{
+         count++;
+      }
+   }while((!isFound) && (count < arrCountries.length));
+   //check if has found something
+   if(isFound){
+      return icon;
+   }
+   else{
+      return icon = spokenLanguage + ' - no flag found';
+   }
 }
