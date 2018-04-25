@@ -8,6 +8,7 @@ var arrayCountries = [
 ];
 var movieURL = 'https://api.themoviedb.org/3/search/movie';
 var tvURL = 'https://api.themoviedb.org/3/search/tv';
+var posterURL = 'https://image.tmdb.org/t/p/w185';
 $(document).ready(function(){
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
@@ -57,21 +58,26 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                var language = response[i].original_language;
                //assign flag to a variable
                var flag = assignFlag(language, arrayCountries);
+               //take the poster image
+               var poster = posterURL + response[i].poster_path;
+               console.log(poster);
                //check whether it's a film or a tv show
                if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
                   listInfo.append('<div class="movie_tv-infos">' +
                   '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
                   '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-                  '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
+                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
                   '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                  '<div class="list-item">' +'<img class="poster-img" src="' + poster + '"></div>' +
                   '</div>');
                }
                else{
                   listInfo.append('<div class="movie_tv-infos">' +
                   '<div class="list-item">Titolo:<span>' + response[i].name + '</span></div>' +
                   '<div class="list-item">Titolo originale:<span>' + response[i].original_name + '</span></div>' +
-                  '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
+                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
                   '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                  '<div class="list-item">' +'<img class="poster-img" src="' + poster + '"></div>' +
                   '</div>');
                }
             }

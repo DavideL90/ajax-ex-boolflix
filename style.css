@@ -62,7 +62,10 @@ main{
    display: flex;
    align-items: center;
 }
-.movie_tv-infos .list-item img{
+.movie_tv-infos .list-item .flags img{
    width: 35px;
    /* height: 35px; */
+}
+.movie_tv-infos .list-item .poster-img{
+
 }
