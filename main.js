@@ -27,6 +27,26 @@ $(document).ready(function(){
          searchForMoviesAndTvShows(itemToSearch, tvURL);
       }
    });
+
+   //take the content of the input box if press enter
+   $('#inputSearch').keypress(function(e){
+      if(e.which === 13){
+         //take the val of the inputbox
+         var itemToSearch  = $('#inputSearch').val();
+         // check whether the input is empty
+         if(itemToSearch == ''){
+            alert('Scrivi nella casella di testo');
+         }
+         else{
+            //make input empty again
+            $('#inputSearch').val('');
+            //search for movies
+            searchForMoviesAndTvShows(itemToSearch, movieURL);
+            //search for tv series
+            searchForMoviesAndTvShows(itemToSearch, tvURL);
+         }
+      }
+   });
 });
 
 //make an api call to search for movies
@@ -107,6 +127,7 @@ function assignStars(rating){
    }
    return stars;
 }
+
 //search if a flag for a specific language exist
 function assignFlag(spokenLanguage , arrCountries){
    var isFound = false;
