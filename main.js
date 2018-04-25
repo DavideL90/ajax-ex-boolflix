@@ -47,6 +47,16 @@ $(document).ready(function(){
          }
       }
    });
+
+   //when click on image rotate and shows info
+   $(document).on('click', '.poster-img', function(){
+      $(this).toggleClass('image-rotate');
+      $(this).parents('.poster-cnt').children('.overlay').fadeIn(2000);
+   });
+   $(document).on('click', '.overlay', function(){
+      $(this).parents('.poster-cnt').children('.poster-img').toggleClass('image-rotate');
+      $(this).fadeoOut(2000);
+   });
 });
 
 //make an api call to search for movies
@@ -83,43 +93,45 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                console.log(poster);
                //check whether it's a film or a tv show
                if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
-                  listInfo.append('<div class="poster-cnt ' + (i+1) +'">' +'<img class="poster-img" src="' + poster + '"></div>');
-                  var posterContainer = $('.poster-cnt.' + (i+1));
-                  console.log(posterContainer);
-                  posterContainer.append('<div class="movie_tv-infos">' +
-                  '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
-                  '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                  '</div>');
-                  // listInfo.append('<div class="movie_tv-infos">' +
-                  // '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
-                  // '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-                  // '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                  // '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                  // '</div>');
+                  listInfo.append('<div class="poster-cnt">' +
+                                  '<img class="poster-img" src="' + poster + '">' +
+                                  '<div class="overlay">' +
+                                  '<div class="movie_tv-infos">' +
+                                  '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
+                                  '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
+                                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
+                                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                                  '<div class="list-item">Trama: <span> ' + response[i].overview + '</span></div>' +
+                                  '</div>' +
+                                  '</div>' +
+                                  '</div>');
                }
                else{
-                     listInfo.append('<div class="poster-cnt ' + (i+1) +'">' +'<img class="poster-img" src="' + poster + '"></div>');
-                  var posterContainer = $('.poster-cnt.' + (i+1));
-                  posterContainer.append('<div class="movie_tv-infos">' +
-                  '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
-                  '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                  '</div>');
-                  // listInfo.append('<div class="movie_tv-infos">' +
-                  // '<div class="list-item">Titolo:<span>' + response[i].name + '</span></div>' +
-                  // '<div class="list-item">Titolo originale:<span>' + response[i].original_name + '</span></div>' +
-                  // '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                  // '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                  // '<div class="list-item">' +'<img class="poster-img" src="' + poster + '"></div>' +
-                  // '</div>');
+                  listInfo.append('<div class="poster-cnt">' +
+                                  '<img class="poster-img" src="' + poster + '">' +
+                                  '<div class="overlay">' +
+                                  '<div class="movie_tv-infos">' +
+                                  '<div class="list-item">Titolo:<span>' + response[i].name + '</span></div>' +
+                                  '<div class="list-item">Titolo originale:<span>' + response[i].original_name + '</span></div>' +
+                                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
+                                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                                  '<div class="list-item">Trama: <span> ' + response[i].overview + '</span></div>' +
+                                  '</div>' +
+                                  '</div>' +
+                                  '</div>');
                }
+               console.log(response[i].title);
             }
          }
          else{
-            alert('Nessun film trovato!');
+            //if the response array is empty, check if it was searching for a movie
+            //or a tv show. So it can display the proper message
+            if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
+               alert('Nessun film trovato!');
+            }
+            else{
+               alert('Nessuna serie tv trovata!');
+            }
          }
       },
       error: function(){

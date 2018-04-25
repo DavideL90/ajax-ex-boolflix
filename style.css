@@ -16,6 +16,7 @@ body{
    justify-content: space-between;
    align-items: center;
    border-bottom: 1px solid white;
+   background-color: black;
 }
 #logo{
    margin-left: 50px;
@@ -33,6 +34,9 @@ body{
 }
 #searchInstruments #inputSearch{
    width: 300px;
+   outline: none;
+   border-style: none;
+   border-radius: 5px;
 }
 #searchInstruments #searchButton{
    border-radius: 5px;
@@ -55,27 +59,48 @@ main{
    align-items: center;
    overflow-x: auto;
 }
-.movie_tv-infos{
-   color: white;
-   padding: 10px;
-   position: absolute;
-   top: 0;
-}
+/* container of the poster with data inside */
 .poster-cnt{
    margin: 0 50px;
    position: relative;
+   transition: 0.5s ease;
+
 }
+.poster-cnt:hover{
+   transform: scale(1.2, 1.2);
+
+}
+.poster-cnt .poster-img{
+   border: 1px solid white;
+   transition: 0.5s ease;
+   display: block;
+}
+.image-rotate{
+   transform: rotateY(180deg);
+}
+/* class assigned to stars */
 .colored{
    color: yellow;
 }
+.overlay{
+   position: absolute;
+   top: 0;
+   height: 100%;
+   background-color: rgba(0, 0, 0, 0.9);
+   display: none;
+}
+.movie_tv-infos{
+   color: white;
+   padding: 10px;
+
+   /* display: none; */
+}
 .movie_tv-infos .list-item{
    padding: 10px 0;
-   display: flex;
-   align-items: center;
+   /* display: flex;
+   align-items: center; */
 }
+/* specify width for flags icons */
 .movie_tv-infos .list-item .flags img{
    width: 35px;
-}
-.movie_tv-infos .list-item .poster-img{
-   border: 1px solid white;
 }
