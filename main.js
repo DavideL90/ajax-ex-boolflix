@@ -6,6 +6,8 @@ var arrayCountries = [
    {'es': '<img src="flags/spain.jpg">'},
    {'jp': '<img src="flag/japan.jpg"'}
 ];
+var movieURL = 'https://api.themoviedb.org/3/search/movie';
+var tvURL = 'https://api.themoviedb.org/3/search/tv';
 $(document).ready(function(){
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
@@ -18,19 +20,23 @@ $(document).ready(function(){
       else{
          //make input empty again
          $('#inputSearch').val('');
-         searchForMovies(itemToSearch);
+         //search for movies
+         searchForMoviesAndTvShows(itemToSearch, movieURL);
+         //search for tv series
+         searchForMoviesAndTvShows(itemToSearch, tvURL);
       }
    });
 });
 
 //make an api call to search for movies
-function searchForMovies(searchItem){
+function searchForMoviesAndTvShows(searchItem, URLtoSearch){
    //empty the list of previous movies searched
    $('.list-info').html('');
    //create a var of the list that contains info
    var listInfo = $('.list-info');
+   //make an ajax call to find the movies
    $.ajax({
-      url: 'https://api.themoviedb.org/3/search/movie',
+      url: URLtoSearch,
       method: 'GET',
       data: {
          api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb',
@@ -49,17 +55,25 @@ function searchForMovies(searchItem){
                var fullStars = assignStars(vote);
                //take the language of the movie
                var language = response[i].original_language;
-               console.log(vote);
-               console.log(language);
                //assign flag to a variable
                var flag = assignFlag(language, arrayCountries);
-               console.log(flag);
-               listInfo.append('<div class="movie-infos">' +
-               '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
-               '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-               '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
-               '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-               '</div>');
+               //check whether it's a film or a tv show
+               if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
+                  listInfo.append('<div class="movie_tv-infos">' +
+                  '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
+                  '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
+                  '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
+                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                  '</div>');
+               }
+               else{
+                  listInfo.append('<div class="movie_tv-infos">' +
+                  '<div class="list-item">Titolo:<span>' + response[i].name + '</span></div>' +
+                  '<div class="list-item">Titolo originale:<span>' + response[i].original_name + '</span></div>' +
+                  '<div class="list-item">Lingua: <span> ' + flag + '</span></div>' +
+                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
+                  '</div>');
+               }
             }
          }
          else{
@@ -71,6 +85,7 @@ function searchForMovies(searchItem){
       }
    });
 }
+
 //convert movie vote into stars
 function assignStars(rating){
    var stars = '';
