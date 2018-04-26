@@ -51,11 +51,11 @@ $(document).ready(function(){
    //when click on image rotate and shows info
    $(document).on('click', '.poster-img', function(){
       $(this).toggleClass('image-rotate');
-      $(this).parents('.poster-cnt').children('.overlay').fadeIn(2000);
+      $(this).parents('.poster-cnt').children('.overlay').fadeIn(1500);
    });
    $(document).on('click', '.overlay', function(){
       $(this).parents('.poster-cnt').children('.poster-img').toggleClass('image-rotate');
-      $(this).fadeoOut(2000);
+      $(this).hide();
    });
 });
 
@@ -89,19 +89,30 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                //assign flag to a variable
                var flag = assignFlag(language, arrayCountries);
                //take the poster image
-               var poster = posterURL + response[i].poster_path;
+               // response[i].poster_path;
+               console.log(response[i].poster_path);
+               if(response[i].poster_path == null){
+                  var poster = '404.jpg';
+               }
+               else{
+                  var poster = posterURL + response[i].poster_path;
+
+               }
                console.log(poster);
+               // if(poster == null){
+               //    poster =
+               // }
                //check whether it's a film or a tv show
                if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
                   listInfo.append('<div class="poster-cnt">' +
                                   '<img class="poster-img" src="' + poster + '">' +
                                   '<div class="overlay">' +
                                   '<div class="movie_tv-infos">' +
-                                  '<div class="list-item">Titolo:<span>' + response[i].title + '</span></div>' +
-                                  '<div class="list-item">Titolo originale:<span>' + response[i].original_title + '</span></div>' +
-                                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item">Trama: <span> ' + response[i].overview + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + response[i].title + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_title + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + response[i].overview + '</span></div>' +
                                   '</div>' +
                                   '</div>' +
                                   '</div>');
@@ -111,11 +122,11 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                                   '<img class="poster-img" src="' + poster + '">' +
                                   '<div class="overlay">' +
                                   '<div class="movie_tv-infos">' +
-                                  '<div class="list-item">Titolo:<span>' + response[i].name + '</span></div>' +
-                                  '<div class="list-item">Titolo originale:<span>' + response[i].original_name + '</span></div>' +
-                                  '<div class="list-item">Lingua: <span class="flags"> ' + flag + '</span></div>' +
-                                  '<div class="list-item">Voto: <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item">Trama: <span> ' + response[i].overview + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + response[i].name + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_name + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + response[i].overview + '</span></div>' +
                                   '</div>' +
                                   '</div>' +
                                   '</div>');
