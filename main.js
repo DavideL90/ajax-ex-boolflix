@@ -88,9 +88,7 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                var language = response[i].original_language;
                //assign flag to a variable
                var flag = assignFlag(language, arrayCountries);
-               //take the poster image
-               // response[i].poster_path;
-               console.log(response[i].poster_path);
+               // check for the poster image. If there's none set a default img
                if(response[i].poster_path == null){
                   var poster = '404.jpg';
                }
@@ -98,10 +96,14 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                   var poster = posterURL + response[i].poster_path;
 
                }
-               console.log(poster);
-               // if(poster == null){
-               //    poster =
-               // }
+               //check if overview is empty. If so write no-info
+               if(response[i].overview == ""){
+                  var overview = 'no-info';
+               }
+               else{
+                  var overview = response[i].overview;
+
+               }
                //check whether it's a film or a tv show
                if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
                   listInfo.append('<div class="poster-cnt">' +
@@ -112,7 +114,7 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                                   '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_title + '</span></div>' +
                                   '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
                                   '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + response[i].overview + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
                                   '</div>' +
                                   '</div>' +
                                   '</div>');
@@ -126,7 +128,7 @@ function searchForMoviesAndTvShows(searchItem, URLtoSearch){
                                   '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_name + '</span></div>' +
                                   '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
                                   '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + response[i].overview + '</span></div>' +
+                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
                                   '</div>' +
                                   '</div>' +
                                   '</div>');
