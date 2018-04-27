@@ -6,12 +6,18 @@ var arrayCountries = [
    {'es': '<img src="flags/spain.jpg">'},
    {'jp': '<img src="flag/japan.jpg"'}
 ];
-var movieURL = 'https://api.themoviedb.org/3/search/movie';
-var tvURL = 'https://api.themoviedb.org/3/search/tv';
+var creditUrlMov = 'https://api.themoviedb.org/3/movie/';
+var creditUrlTv = 'https://api.themoviedb.org/3/tv/';
 var posterURL = 'https://image.tmdb.org/t/p/w342';
 $(document).ready(function(){
+   //make two ajax call to create two genres array
+   var moviesGenres = findMoviesGenres();
+   var SeriesGenres = findTvShowsGenres();
+   console.log(moviesGenres);
+   console.log(SeriesGenres);
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
+      isClicked = false;
       //take the val of the inputbox
       var itemToSearch  = $('#inputSearch').val();
       // check whether the input is empty
@@ -21,15 +27,15 @@ $(document).ready(function(){
       else{
          //make input empty again
          $('#inputSearch').val('');
-         //search for movies
-         searchForMoviesAndTvShows(itemToSearch, movieURL);
-         //search for tv series
-         searchForMoviesAndTvShows(itemToSearch, tvURL);
+         //search for movies and tv shows
+         searchForMoviesAndTvShows(itemToSearch);
+
       }
    });
 
    //take the content of the input box if press enter
    $('#inputSearch').keypress(function(e){
+      isClicked = false;
       if(e.which === 13){
          //take the val of the inputbox
          var itemToSearch  = $('#inputSearch').val();
@@ -40,16 +46,28 @@ $(document).ready(function(){
          else{
             //make input empty again
             $('#inputSearch').val('');
-            //search for movies
-            searchForMoviesAndTvShows(itemToSearch, movieURL);
-            //search for tv series
-            searchForMoviesAndTvShows(itemToSearch, tvURL);
+            //search for movies and tv series
+            searchForMoviesAndTvShows(itemToSearch);
          }
       }
    });
 
-   //when click on image rotate and shows info
+   //when click on image rotate and shows info and search for additional infos
    $(document).on('click', '.poster-img', function(){
+      //assign the movie or tv show id to a variable
+      var idMovTv = $(this).siblings('.overlay').find('.info-desc').attr('id');
+      //take the movie-list because have to append the names of cast
+      var listOfData = $(this).siblings('.overlay').children('.movie_tv-infos');
+      //check if it's a movie or a tv show
+      var typo = $(this).siblings('.overlay').find('.movieOrTvShow').text();
+      if(typo == 'Film'){
+         //search for the first five cast members
+         findCastMember(idMovTv, creditUrlMov, listOfData);
+      }
+      else{
+         findCastMember(idMovTv, creditUrlTv, listOfData);
+      }
+
       $(this).toggleClass('image-rotate');
       $(this).parents('.poster-cnt').children('.overlay').fadeIn(1500);
    });
@@ -59,98 +77,138 @@ $(document).ready(function(){
    });
 });
 
+//create an array of object of movies genres
+function findMoviesGenres(){
+   var movGenres = [];
+   $.ajax({
+      url: 'https://api.themoviedb.org/3/genre/movie/list',
+      method: 'GET',
+      data: {
+         api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb'
+      },
+      success: function(data){
+        movGenres = data.genres;
+        console.log(movGenres);
+        return movGenres;
+      },
+      error: function(){
+         alert('Errore');
+      },
+   });
+   // return movGenres;
+}
+
+//create an array
+function findTvShowsGenres(){
+   var tvShowsGenres = [];
+   $.ajax({
+      url: 'https://api.themoviedb.org/3/genre/tv/list',
+      method: 'GET',
+      data: {
+         api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb'
+      },
+      success: function(data){
+         tvShowsGenres = data.genres;
+      },
+      error: function(){
+         alert('Errore');
+      }
+   });
+   return tvShowsGenres;
+}
 //make an api call to search for movies
-function searchForMoviesAndTvShows(searchItem, URLtoSearch){
+function searchForMoviesAndTvShows(searchItem){
    //empty the list of previous movies searched
    $('.list-info').html('');
    //create a var of the list that contains info
    var listInfo = $('.list-info');
    //make an ajax call to find the movies
    $.ajax({
-      url: URLtoSearch,
+      url: 'https://api.themoviedb.org/3/search/multi',
       method: 'GET',
       data: {
          api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb',
          query: searchItem,
-         language: 'it'
+         language: 'it',
       },
       success: function(data){
          //take the results of the ajax call
          var response = data.results;
          console.log(response);
+         //check if the array is empty
          if(response.length != 0){
+            //make a loop through the array to check every element
             for (var i = 0; i < response.length; i++) {
-               //convert the vote into a number between 1 and 5
-               var vote = (response[i].vote_average * 5 / 10).toFixed(0);
-               //make stars appears instead of vote
-               var fullStars = assignStars(vote);
-               //take the language of the movie
-               var language = response[i].original_language;
-               //assign flag to a variable
-               var flag = assignFlag(language, arrayCountries);
-               // check for the poster image. If there's none set a default img
-               if(response[i].poster_path == null){
-                  var poster = '404.jpg';
-               }
-               else{
-                  var poster = posterURL + response[i].poster_path;
-
-               }
-               //check if overview is empty. If so write no-info
-               if(response[i].overview == ""){
-                  var overview = 'no-info';
-               }
-               else{
-                  var overview = response[i].overview;
-
-               }
-               //check whether it's a film or a tv show
-               if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
-                  listInfo.append('<div class="poster-cnt">' +
-                                  '<img class="poster-img" src="' + poster + '">' +
-                                  '<div class="overlay">' +
-                                  '<div class="movie_tv-infos">' +
-                                  '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + response[i].title + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_title + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
-                                  '</div>' +
-                                  '</div>' +
-                                  '</div>');
-               }
-               else{
-                  listInfo.append('<div class="poster-cnt">' +
-                                  '<img class="poster-img" src="' + poster + '">' +
-                                  '<div class="overlay">' +
-                                  '<div class="movie_tv-infos">' +
-                                  '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + response[i].name + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + response[i].original_name + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-                                  '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
-                                  '</div>' +
-                                  '</div>' +
-                                  '</div>');
-               }
-               console.log(response[i].title);
+               printResults(listInfo, response[i]);
             }
          }
          else{
-            //if the response array is empty, check if it was searching for a movie
-            //or a tv show. So it can display the proper message
-            if(URLtoSearch === 'https://api.themoviedb.org/3/search/movie'){
-               alert('Nessun film trovato!');
-            }
-            else{
-               alert('Nessuna serie tv trovata!');
-            }
+            alert('nessun film e/o serie trovati');
          }
       },
       error: function(){
          alert('Errore');
       }
    });
+}
+
+//print results
+function printResults(infoList, result){
+   //convert the vote into a number between 1 and 5
+   var vote = (result.vote_average * 5 / 10).toFixed(0);
+   //make stars appears instead of vote
+   var fullStars = assignStars(vote);
+   //take the language of the movie
+   var language = result.original_language;
+   //assign flag to a variable
+   var flag = assignFlag(language, arrayCountries);
+   // check for the poster image. If there's none set a default img
+   if(result.poster_path == null){
+      var poster = '404.jpg';
+   }
+   else{
+      var poster = posterURL + result.poster_path;
+   }
+   //check if overview is empty. If so write: "no-info"
+   if(result.overview == ""){
+      var overview = 'no-info';
+   }
+   else{
+      var overview = result.overview;
+
+   }
+   var media = result.media_type;
+   //check whether it's a film or a tv show and print results
+   if(result.media_type == 'movie'){
+      infoList.append('<div class="poster-cnt">' +
+      '<img class="poster-img" src="' + poster + '">' +
+      '<div class="overlay">' +
+      '<div class="movie_tv-infos">' +
+      '<div class="list-item"><span id="' + result.id + '" class="info-desc">Tipologia: </span><span class="movieOrTvShow">Film</span></div>' +
+      '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + result.title + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + result.original_title + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
+      '</div>' +
+      '</div>' +
+      '</div>');
+   }
+   else{
+      infoList.append('<div class="poster-cnt">' +
+      '<img class="poster-img" src="' + poster + '">' +
+      '<div class="overlay">' +
+      '<div class="movie_tv-infos">' +
+      '<div class="list-item"><span id="' + result.id + '" class="info-desc">Tipologia: </span><span class="movieOrTvShow">Serie TV</span></div>' +
+      '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + result.name + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + result.original_name + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
+      '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
+      '</div>' +
+      '</div>' +
+      '</div>');
+   }
 }
 
 //convert movie vote into stars
@@ -190,4 +248,37 @@ function assignFlag(spokenLanguage , arrCountries){
    else{
       return icon = spokenLanguage + ' - no flag found';
    }
+}
+
+//search for 5 cast members
+function findCastMember(MovTvId, urlToSearch, dataList){
+   dataList.children('.cast-name').remove();
+   $.ajax({
+      url: urlToSearch + MovTvId + '/credits',
+      method: 'GET',
+      data: {
+         api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb',
+         language: 'it',
+      },
+      success: function(data){
+         var castMembers = data.cast;
+         if(castMembers.length != 0){
+            for (var i = 0; i < 5; i++) {
+               dataList.append('<div class="list-item cast-name"><span class="info-desc">Cast member: </span><span>' + castMembers[i].name +'</span></div>');
+            }
+         }
+         else{
+            dataList.append('<div class="list-item"><span class="info-desc">Cast: </span><span> no cast found </span></div>');
+         }
+
+      },
+      error: function(){
+         alert('Error');
+      }
+   });
+}
+
+//search and print genres
+function findGenres(){
+
 }

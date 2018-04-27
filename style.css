@@ -7,7 +7,6 @@ body{
    height: 100vh;
    background: linear-gradient(black, lightgrey);
 }
-
 /* SEARCH BAR */
 #searchBar{
    height: 80px;
@@ -63,20 +62,19 @@ main{
 .poster-cnt{
    margin: 0 50px;
    position: relative;
-   top: calc((100% - 500px) / 2);
+   top: 50%;
+   transform: translateY(-50%);
    transition: all 0.5s ease;
    cursor: pointer;
    width: 342px;
    height: 500px;
-   border: 1px solid white;
    display: inline-block;
 }
 .poster-cnt:hover{
-   transform: scale(1.2, 1.2);
+   transform: translateY(-50%) scale(1.2, 1.2);
 
 }
 .poster-cnt .poster-img{
-   border: 1px solid white;
    transition: 0.5s ease;
    display: block;
    width: 100%;
