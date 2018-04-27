@@ -16,8 +16,8 @@ findMoviesGenres();
 findTvShowsGenres();
 
 $(document).ready(function(){
-   console.log(moviesGenres);
-   console.log(seriesGenres);
+   // console.log(moviesGenres);
+   // console.log(seriesGenres);
 
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
@@ -64,7 +64,7 @@ $(document).ready(function(){
       var listOfData = $(this).siblings('.overlay').children('.movie_tv-infos');
       //check if it's a movie or a tv show
       var typo = $(this).siblings('.overlay').find('.movieOrTvShow').text();
-      if(typo == 'Film'){
+      if(typo == 'movie'){
          //search for the first five cast members
          findCastMember(idMovTv, creditUrlMov, listOfData);
       }
@@ -134,13 +134,15 @@ function searchForMoviesAndTvShows(searchItem){
       success: function(data){
          //take the results of the ajax call
          var response = data.results;
-         console.log(response);
          //check if the array is empty
          if(response.length != 0){
             //make a loop through the array to check every element
             for (var i = 0; i < response.length; i++) {
-               var newObj = transformObject(response[i]);
-               printResults(listInfo, newObj);
+               if(response[i].media_type != 'person'){
+                  var newObj = transformObject(response[i]);
+                  console.log(newObj)
+                  printResults(listInfo, newObj);
+               }
             }
          }
          else{
@@ -155,32 +157,22 @@ function searchForMoviesAndTvShows(searchItem){
 
 //change the keys of the objects
 function transformObject(answer){
-   var tempoObj = {};
+   var tempObj = {
+      id: answer.id,
+      media_type: answer.media_type,
+      genre_ids: answer.genre_ids,
+      original_language: answer.original_language,
+      overview: answer.overview,
+      vote_average: answer.vote_average,
+      poster_path: answer.poster_path
+   };
    if(answer.media_type == 'movie'){
-      tempObj = {
-         id: answer.id,
-         title: answer.title,
-         original_title: answer.original_title,
-         media_type: answer.media_type,
-         genre_ids: answer.genre_ids,
-         original_language: answer.original_language,
-         overview: answer.overview,
-         vote_average: answer.vote_average,
-         poster_path: answer.poster_path
-      };
+      tempObj.title = answer.title;
+      tempObj.original_title = answer.original_title;
    }
    else{
-      tempObj = {
-         id: answer.id,
-         title: answer.name,
-         original_title: answer.original_name,
-         media_type: answer.media_type,
-         genres_ids: answer.genre_ids,
-         original_language: answer.original_language,
-         overview: answer.overview,
-         vote_average: answer.vote_average,
-         poster_path: answer.poster_path
-      };
+      tempObj.title = answer.name;
+      tempObj.original_title = answer.original_name;
    }
    return tempObj;
 }
