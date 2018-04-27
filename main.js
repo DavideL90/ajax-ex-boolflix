@@ -1,10 +1,10 @@
 var arrayCountries = [
-   {'it': '<img src="flags/italy.jpg>'},
+   {'it': '<img src="flags/italy.jpg">'},
    {'en': '<img src="flags/england.jpg">'},
    {'fr': '<img src="flags/france.jpg">'},
    {'de': '<img src="flags/germany.jpg">'},
    {'es': '<img src="flags/spain.jpg">'},
-   {'jp': '<img src="flags/japan.jpg"'}
+   {'jp': '<img src="flags/japan.jpg">'}
 ];
 var creditUrlMov = 'https://api.themoviedb.org/3/movie/';
 var creditUrlTv = 'https://api.themoviedb.org/3/tv/';
@@ -74,6 +74,7 @@ $(document).ready(function(){
       $(this).toggleClass('image-rotate');
       $(this).parents('.poster-cnt').children('.overlay').fadeIn(1500);
    });
+
    //when click on overlay rotate again the image
    $(document).on('click', '.overlay', function(){
       $(this).parents('.poster-cnt').children('.poster-img').toggleClass('image-rotate');
@@ -81,7 +82,7 @@ $(document).ready(function(){
    });
 });
 
-//create an array of object of movies genres
+//create an array of objects of movies genres
 function findMoviesGenres(){
    $.ajax({
       url: 'https://api.themoviedb.org/3/genre/movie/list',
@@ -98,7 +99,7 @@ function findMoviesGenres(){
    });
 }
 
-//create an array
+//create an array of objects of tv shows genre
 function findTvShowsGenres(){
    $.ajax({
       url: 'https://api.themoviedb.org/3/genre/tv/list',
@@ -114,6 +115,7 @@ function findTvShowsGenres(){
       }
    });
 }
+
 //make an api call to search for movies
 function searchForMoviesAndTvShows(searchItem){
    //empty the list of previous movies searched
@@ -137,7 +139,8 @@ function searchForMoviesAndTvShows(searchItem){
          if(response.length != 0){
             //make a loop through the array to check every element
             for (var i = 0; i < response.length; i++) {
-               printResults(listInfo, response[i]);
+               var newObj = transformObject(response[i]);
+               printResults(listInfo, newObj);
             }
          }
          else{
@@ -150,16 +153,47 @@ function searchForMoviesAndTvShows(searchItem){
    });
 }
 
+//change the keys of the objects
+function transformObject(answer){
+   var tempoObj = {};
+   if(answer.media_type == 'movie'){
+      tempObj = {
+         id: answer.id,
+         title: answer.title,
+         original_title: answer.original_title,
+         media_type: answer.media_type,
+         genre_ids: answer.genre_ids,
+         original_language: answer.original_language,
+         overview: answer.overview,
+         vote_average: answer.vote_average,
+         poster_path: answer.poster_path
+      };
+   }
+   else{
+      tempObj = {
+         id: answer.id,
+         title: answer.name,
+         original_title: answer.original_name,
+         media_type: answer.media_type,
+         genres_ids: answer.genre_ids,
+         original_language: answer.original_language,
+         overview: answer.overview,
+         vote_average: answer.vote_average,
+         poster_path: answer.poster_path
+      };
+   }
+   return tempObj;
+}
+
 //print results
 function printResults(infoList, result){
    //convert the vote into a number between 1 and 5
+   // than use it to colour stars
    var vote = (result.vote_average * 5 / 10).toFixed(0);
-   //make stars appears instead of vote
-   var fullStars = assignStars(vote);
-   //take the language of the movie
+
+   //take the language of the movie to make the country flag appears
    var language = result.original_language;
-   //assign flag to a variable
-   var flag = assignFlag(language, arrayCountries);
+
    // check for the poster image. If there's none set a default img
    if(result.poster_path == null){
       var poster = '404.jpg';
@@ -175,38 +209,19 @@ function printResults(infoList, result){
       var overview = result.overview;
 
    }
-   var media = result.media_type;
-   //check whether it's a film or a tv show and print results
-   if(result.media_type == 'movie'){
-      infoList.append('<div class="poster-cnt">' +
-      '<img class="poster-img" src="' + poster + '">' +
-      '<div class="overlay">' +
-      '<div class="movie_tv-infos">' +
-      '<div class="list-item"><span id="' + result.id + '" class="info-desc">Tipologia: </span><span class="movieOrTvShow">Film</span></div>' +
-      '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + result.title + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + result.original_title + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
-      '</div>' +
-      '</div>' +
-      '</div>');
-   }
-   else{
-      infoList.append('<div class="poster-cnt">' +
-      '<img class="poster-img" src="' + poster + '">' +
-      '<div class="overlay">' +
-      '<div class="movie_tv-infos">' +
-      '<div class="list-item"><span id="' + result.id + '" class="info-desc">Tipologia: </span><span class="movieOrTvShow">Serie TV</span></div>' +
-      '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + result.name + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + result.original_name + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + flag + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + fullStars + '</span></div>' +
-      '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
-      '</div>' +
-      '</div>' +
-      '</div>');
-   }
+   infoList.append('<div class="poster-cnt">' +
+   '<img class="poster-img" src="' + poster + '">' +
+   '<div class="overlay">' +
+   '<div class="movie_tv-infos">' +
+   '<div class="list-item"><span id="' + result.id + '" class="info-desc">Tipologia: </span><span class="movieOrTvShow">' + result.media_type + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Titolo: </span><span>' + result.title + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Titolo originale: </span><span>' + result.original_title + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + assignFlag(language, arrayCountries) + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + assignStars(vote) + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
+   '</div>' +
+   '</div>' +
+   '</div>');
 }
 
 //convert movie vote into stars
@@ -251,6 +266,8 @@ function assignFlag(spokenLanguage , arrCountries){
 //search for 5 cast members
 function findCastMember(MovTvId, urlToSearch, dataList){
    dataList.children('.cast-name').remove();
+   console.log(MovTvId);
+   console.log(urlToSearch);
    $.ajax({
       url: urlToSearch + MovTvId + '/credits',
       method: 'GET',
@@ -266,7 +283,7 @@ function findCastMember(MovTvId, urlToSearch, dataList){
             do{
                dataList.append('<div class="list-item cast-name"><span class="info-desc">Cast member: </span><span>' + castMembers[i].name +'</span></div>');
                i++;
-            }while((i < castMembers.length) && (i <= 5));
+            }while((i < castMembers.length) && (i < 5));
          }
          else{
             dataList.append('<div class="list-item"><span class="info-desc">Cast: </span><span> no cast found </span></div>');
