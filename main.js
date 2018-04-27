@@ -4,17 +4,21 @@ var arrayCountries = [
    {'fr': '<img src="flags/france.jpg">'},
    {'de': '<img src="flags/germany.jpg">'},
    {'es': '<img src="flags/spain.jpg">'},
-   {'jp': '<img src="flag/japan.jpg"'}
+   {'jp': '<img src="flags/japan.jpg"'}
 ];
 var creditUrlMov = 'https://api.themoviedb.org/3/movie/';
 var creditUrlTv = 'https://api.themoviedb.org/3/tv/';
 var posterURL = 'https://image.tmdb.org/t/p/w342';
+var moviesGenres = [];
+var seriesGenres = [];
+//make two ajax call to create two genres array
+findMoviesGenres();
+findTvShowsGenres();
+
 $(document).ready(function(){
-   //make two ajax call to create two genres array
-   var moviesGenres = findMoviesGenres();
-   var SeriesGenres = findTvShowsGenres();
    console.log(moviesGenres);
-   console.log(SeriesGenres);
+   console.log(seriesGenres);
+
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
       isClicked = false;
@@ -67,10 +71,10 @@ $(document).ready(function(){
       else{
          findCastMember(idMovTv, creditUrlTv, listOfData);
       }
-
       $(this).toggleClass('image-rotate');
       $(this).parents('.poster-cnt').children('.overlay').fadeIn(1500);
    });
+   //when click on overlay rotate again the image
    $(document).on('click', '.overlay', function(){
       $(this).parents('.poster-cnt').children('.poster-img').toggleClass('image-rotate');
       $(this).hide();
@@ -79,7 +83,6 @@ $(document).ready(function(){
 
 //create an array of object of movies genres
 function findMoviesGenres(){
-   var movGenres = [];
    $.ajax({
       url: 'https://api.themoviedb.org/3/genre/movie/list',
       method: 'GET',
@@ -87,20 +90,16 @@ function findMoviesGenres(){
          api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb'
       },
       success: function(data){
-        movGenres = data.genres;
-        console.log(movGenres);
-        return movGenres;
+        moviesGenres = data.genres;
       },
       error: function(){
          alert('Errore');
       },
    });
-   // return movGenres;
 }
 
 //create an array
 function findTvShowsGenres(){
-   var tvShowsGenres = [];
    $.ajax({
       url: 'https://api.themoviedb.org/3/genre/tv/list',
       method: 'GET',
@@ -108,13 +107,12 @@ function findTvShowsGenres(){
          api_key: 'b0cce258bf9e6a44d4d21a5cd65ffdfb'
       },
       success: function(data){
-         tvShowsGenres = data.genres;
+         seriesGenres = data.genres;
       },
       error: function(){
          alert('Errore');
       }
    });
-   return tvShowsGenres;
 }
 //make an api call to search for movies
 function searchForMoviesAndTvShows(searchItem){
@@ -262,10 +260,13 @@ function findCastMember(MovTvId, urlToSearch, dataList){
       },
       success: function(data){
          var castMembers = data.cast;
+         console.log(castMembers);
          if(castMembers.length != 0){
-            for (var i = 0; i < 5; i++) {
+            var i = 0
+            do{
                dataList.append('<div class="list-item cast-name"><span class="info-desc">Cast member: </span><span>' + castMembers[i].name +'</span></div>');
-            }
+               i++;
+            }while((i < castMembers.length) && (i <= 5));
          }
          else{
             dataList.append('<div class="list-item"><span class="info-desc">Cast: </span><span> no cast found </span></div>');
