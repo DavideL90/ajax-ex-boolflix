@@ -16,8 +16,8 @@ findMoviesGenres();
 findTvShowsGenres();
 
 $(document).ready(function(){
-   // console.log(moviesGenres);
-   // console.log(seriesGenres);
+   console.log(moviesGenres);
+   console.log(seriesGenres);
 
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
@@ -62,6 +62,7 @@ $(document).ready(function(){
       var idMovTv = $(this).siblings('.overlay').find('.info-desc').attr('id');
       //take the movie-list because have to append the names of cast
       var listOfData = $(this).siblings('.overlay').children('.movie_tv-infos');
+
       //check if it's a movie or a tv show
       var typo = $(this).siblings('.overlay').find('.movieOrTvShow').text();
       if(typo == 'movie'){
@@ -71,6 +72,7 @@ $(document).ready(function(){
       else{
          findCastMember(idMovTv, creditUrlTv, listOfData);
       }
+
       $(this).toggleClass('image-rotate');
       $(this).parents('.poster-cnt').children('.overlay').fadeIn(1500);
    });
@@ -193,6 +195,7 @@ function printResults(infoList, result){
    else{
       var poster = posterURL + result.poster_path;
    }
+
    //check if overview is empty. If so write: "no-info"
    if(result.overview == ""){
       var overview = 'no-info';
@@ -201,6 +204,9 @@ function printResults(infoList, result){
       var overview = result.overview;
 
    }
+   //find the genres of movie or tv show and print them
+   var genres = findGenres(result);
+
    infoList.append('<div class="poster-cnt">' +
    '<img class="poster-img" src="' + poster + '">' +
    '<div class="overlay">' +
@@ -214,6 +220,24 @@ function printResults(infoList, result){
    '</div>' +
    '</div>' +
    '</div>');
+}
+
+//search and print genres
+function findGenres(result){
+   var arrGenres = result.genre_ids;
+   var genresNames = '';
+   console.log(generi);
+   if(arrGenres.length != 0){
+      if(result.media_type == 'movie'){
+         
+      }
+      else{
+
+      }
+   }
+   else{
+      return 'no-info';
+   }
 }
 
 //convert movie vote into stars
@@ -286,9 +310,4 @@ function findCastMember(MovTvId, urlToSearch, dataList){
          alert('Error');
       }
    });
-}
-
-//search and print genres
-function findGenres(){
-
 }
