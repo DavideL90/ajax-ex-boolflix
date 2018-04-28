@@ -16,9 +16,6 @@ findMoviesGenres();
 findTvShowsGenres();
 
 $(document).ready(function(){
-   console.log(moviesGenres);
-   console.log(seriesGenres);
-
    //take the content of the input box and search for a movie
    $('#searchButton').click(function(){
       isClicked = false;
@@ -206,7 +203,6 @@ function printResults(infoList, result){
    }
    //find the genres of movie or tv show and print them
    var genres = findGenres(result);
-   console.log(genres);
    infoList.append('<div class="poster-cnt">' +
    '<img class="poster-img" src="' + poster + '">' +
    '<div class="overlay">' +
