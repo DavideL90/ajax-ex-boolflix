@@ -206,7 +206,7 @@ function printResults(infoList, result){
    }
    //find the genres of movie or tv show and print them
    var genres = findGenres(result);
-
+   console.log(genres);
    infoList.append('<div class="poster-cnt">' +
    '<img class="poster-img" src="' + poster + '">' +
    '<div class="overlay">' +
@@ -217,6 +217,7 @@ function printResults(infoList, result){
    '<div class="list-item"><span class="info-desc">Lingua: </span> <span class="flags"> ' + assignFlag(language, arrayCountries) + '</span></div>' +
    '<div class="list-item"><span class="info-desc">Voto: </span> <span> ' + assignStars(vote) + '</span></div>' +
    '<div class="list-item"><span class="info-desc">Trama: </span> <span> ' + overview + '</span></div>' +
+   '<div class="list-item"><span class="info-desc">Generi: </span> <span> ' + genres + '</span></div>' +
    '</div>' +
    '</div>' +
    '</div>');
@@ -224,16 +225,41 @@ function printResults(infoList, result){
 
 //search and print genres
 function findGenres(result){
+   //take the ids of the single movie or tv show and put them in an array
    var arrGenres = result.genre_ids;
+   //variable to store the genres names
    var genresNames = '';
-   console.log(generi);
+   //temporary array to store the movies or tv shows genres
+   var tempArrayGenres = [];
+   //check if there are genres avaiable, otherwise return no-info
    if(arrGenres.length != 0){
+      //check if we have a movie or a tv shows.
       if(result.media_type == 'movie'){
-         
+         tempArrayGenres = moviesGenres;
       }
       else{
-
+         tempArrayGenres = seriesGenres;
       }
+      //make a loop inside the genres of the movie/tv we are checking
+      for (var i = 0; i < arrGenres.length; i++) {
+         var isFound = false;
+         var cont = 0;
+         //make a loop to find the name of the genre
+         do{
+            if(tempArrayGenres[cont].id == arrGenres[i]){
+               genresNames += tempArrayGenres[cont].name + ', ';
+               isFound = true;
+            }
+            else{
+               cont++
+            }
+         }while((!isFound) && (cont < tempArrayGenres.length));
+      }
+      //make a loop to separate the genres with a comma
+      var index = genresNames.lastIndexOf(',');
+      //remove last comma
+      genresNames = genresNames.slice(0, index);
+      return genresNames;
    }
    else{
       return 'no-info';
