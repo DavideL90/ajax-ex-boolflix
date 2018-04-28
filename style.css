@@ -20,8 +20,9 @@ body{
    margin-left: 50px;
 }
 #logo h2{
-   font-size: 40px;
+   font-size: 45px;
    color: red;
+   font-family: 'Black Han Sans', sans-serif;
 }
 #searchInstruments{
    margin-right: 50px;
@@ -111,4 +112,25 @@ main{
 /* specify width for flags icons */
 .movie_tv-infos .list-item .flags img{
    width: 35px;
+}
+
+/* MEDIA QUERIES */
+@media screen and (max-width: 700px) {
+   #searchBar{
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+   }
+   #logo{
+      margin-left: 0;
+   }
+   #searchInstruments{
+      margin-right: 0;
+   }
+   main{
+      height: calc(100% - 120px);
+
+   }
 }
